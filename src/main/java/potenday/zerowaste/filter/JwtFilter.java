@@ -34,10 +34,13 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         // get the token from the request
-        FirebaseToken decodedToken;
+        FirebaseToken decodedToken = null;
+        String header = request.getHeader("Authorization");
         try{
-            String header = RequestUtil.getAuthorizationToken(request.getHeader("Authorization"));
-            decodedToken = firebaseAuth.verifyIdToken(header);
+            if (header != null) {
+                header = RequestUtil.getAuthorizationToken(request.getHeader("Authorization"));
+                decodedToken = firebaseAuth.verifyIdToken(header);
+            }
         } catch (FirebaseAuthException | IllegalArgumentException e) {
             // ErrorMessage 응답 전송
             response.setStatus(HttpStatus.SC_UNAUTHORIZED);
@@ -46,13 +49,19 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        // User를 가져와 SecurityContext에 저장한다.
+//         User를 가져와 SecurityContext에 저장한다.
         try{
-            System.out.println("User를 가져와 SecurityContext에 저장한다. 성공");
-            UserDetails user = userDetailsService.loadUserByUsername(decodedToken.getUid());
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    user, null, user.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            if(decodedToken != null && header != null) {
+                System.out.println("decodedToken");
+                System.out.println(decodedToken);
+                System.out.println(decodedToken.getUid());
+                UserDetails user = userDetailsService.loadUserByUsername(decodedToken.getUid());
+                System.out.println("user");
+                System.out.println(user);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        user, null, user.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         } catch(NoSuchElementException e){
             // ErrorMessage 응답 전송
             response.setStatus(HttpStatus.SC_UNAUTHORIZED);

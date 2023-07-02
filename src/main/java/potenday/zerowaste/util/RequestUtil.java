@@ -5,18 +5,12 @@ import jakarta.servlet.http.HttpServletRequest;
 public class RequestUtil {
 
     public static String getAuthorizationToken(String header) {
-        header.replace("Bearer ", "");
+        header = header.replace("Bearer ", "");
         // Authorization: Bearer <access_token>
-        if (header == null || !header.startsWith("Bearer ")) {
+        if (header == null) {
             throw new IllegalArgumentException("Invalid authorization header");
         }
-        // Remove Bearer from string
-        String[] parts = header.split(" ");
-        if (parts.length != 2) {
-            throw new IllegalArgumentException("Invalid authorization header");
-        }
-        // Get token
-        return parts[1];
+        return header;
     }
 
     public static String getAuthorizationToken(HttpServletRequest request) {
