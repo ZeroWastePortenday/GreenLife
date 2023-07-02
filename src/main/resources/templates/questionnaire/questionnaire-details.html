@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Questionnaire Details</title>
+</head>
+<body>
+<h1>Questionnaire Details</h1>
+
+<div>
+  <p>ID: <span th:text="${questionnaire.id}"></span></p>
+  <p>Content: <span th:text="${questionnaire.content}"></span></p>
+  <p>Weight: <span th:text="${questionnaire.weight}"></span></p>
+  <p>Visible: <span th:text="${questionnaire.visible}"></span></p>
+  <p>Category: <span th:text="${questionnaire.category}"></span></p>
+</div>
+
+<a th:href="@{/questionnaires}" class="btn btn-primary">Back to List</a>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Questionnaire Form</title>
+</head>
+<body>
+<h1>Questionnaire Form</h1>
+
+<form th:object="${questionnaire}" th:action="@{/questionnaires/create}" method="post">
+  <div>
+    <label>Content:</label>
+    <input type="text" th:field="*{content}"/>
+  </div>
+  <div>
+    <label>Weight:</label>
+    <input type="number" th:field="*{weight}"/>
+  </div>
+  <div>
+    <label>Visible:</label>
+    <input type="checkbox" th:field="*{visible}"/>
+  </div>
+  <div>
+    <label>Category:</label>
+    <input type="text" th:field="*{category}"/>
+  </div>
+  <div>
+    <input type="submit" value="Save"/>
+  </div>
+</form>
+
+</body>
+</html>

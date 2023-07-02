@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Questionnaire List</title>
+</head>
+<body>
+<h1>Questionnaire List</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Category</th>
+        <th>Content</th>
+        <th>Weight</th>
+        <th>Visible</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="questionnaire : ${questionnaireList}">
+        <td th:text="${questionnaire.id}"></td>
+        <td th:text="${questionnaire.category}"></td>
+        <td th:text="${questionnaire.content}"></td>
+        <td th:text="${questionnaire.weight}"></td>
+        <td th:text="${questionnaire.visible}"></td>
+        <td>
+            <a th:href="@{/questionnaires/edit/{id}(id=${questionnaire.id})}">Edit</a>
+            <a th:href="@{/questionnaires/delete/{id}(id=${questionnaire.id})}" onclick="return confirm('Are you sure you want to delete this questionnaire?')">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/questionnaires/create}">Create Questionnaire</a>
+</body>
+</html>
