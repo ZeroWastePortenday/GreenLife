@@ -36,5 +36,8 @@ out/
 ### VS Code ###
 .vscode/
 
-### secure
+### firebase - secure file
 /src/main/resources/serviceAccountKey.json
+
+## application - secure file
+/src/main/resources/application.yml
