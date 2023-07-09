@@ -1,21 +1,63 @@
 package potenday.zerowaste.user;
 
-import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.auth.*;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.FirestoreOptions;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseToken;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import potenday.zerowaste.common.ResponseService;
 
-import java.io.FileInputStream;
+import java.util.Objects;
 
+@Slf4j
+@RequestMapping("/api/v1")
 @RestController
 public class UserController {
 
+    public static final String X_AUTH = "x-auth";
     private final Firestore firestore;
+    private final FirebaseAuth firebaseAuth;
+    private final ResponseService responseService;
 
-    public UserController(Firestore firestore) {
+    public UserController(Firestore firestore, FirebaseAuth firebaseAuth, ResponseService responseService) {
         this.firestore = firestore;
+        this.firebaseAuth = firebaseAuth;
+        this.responseService = responseService;
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(HttpServletRequest request) throws FirebaseAuthException {
+
+        String jwt = request.getHeader(X_AUTH);
+
+        FirebaseToken firebaseToken = firebaseAuth.verifyIdToken(jwt);
+        String uid = firebaseToken.getUid();
+        User user = CustomUserService.signUp(uid);
+
+        return ResponseEntity.ok(responseService.getSingleResult(UserDto.of(user)));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(HttpServletRequest request) throws FirebaseAuthException {
+
+        String jwt = request.getHeader(X_AUTH);
+
+        FirebaseToken firebaseToken = firebaseAuth.verifyIdToken(jwt);
+        String uid = firebaseToken.getUid();
+        User user = CustomUserService.getUserByUid(uid);
+
+        if(Objects.isNull(user)){
+            user = CustomUserService.signUp(uid);
+        }
+
+        return ResponseEntity.ok(responseService.getSingleResult(UserDto.of(user)));
     }
 
     @GetMapping("/user_all")

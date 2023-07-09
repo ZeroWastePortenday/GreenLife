@@ -1,7 +1,6 @@
 package potenday.zerowaste.config;
 
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.firestore.FirestoreOptions;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -11,7 +10,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StreamUtils;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -21,13 +19,6 @@ public class FirebaseConfig {
     @Bean
     public FirebaseAuth firebaseAuth() throws IOException {
         System.out.println("firebaseAuth start");
-//        FileInputStream serviceAccount = new FileInputStream("src/main/resources/serviceAccountKey.json");
-//
-//        FirebaseOptions options = FirebaseOptions.builder()
-//                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-//                .build();
-//        FirebaseApp.initializeApp(options);
-//        return FirebaseAuth.getInstance(FirebaseApp.getInstance());
         ClassPathResource serviceAccountResource = new ClassPathResource("serviceAccountKey.json");
         try (InputStream inputStream = serviceAccountResource.getInputStream()) {
             String serviceAccountJson = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);

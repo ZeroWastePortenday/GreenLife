@@ -38,6 +38,8 @@ public class SecurityConfig {
 //                .requestMatchers("/test").permitAll()
                 .requestMatchers("/resources/**").permitAll()
                 .requestMatchers("/questionnaires/**").permitAll()
+                .requestMatchers("/api/v1/signup").permitAll()
+                .requestMatchers("/api/v1/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtFilter(userDetailsService, firebaseAuth),
