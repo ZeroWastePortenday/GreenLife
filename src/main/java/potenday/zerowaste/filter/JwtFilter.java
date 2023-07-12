@@ -7,7 +7,11 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,14 +19,17 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import potenday.zerowaste.user.CustomUserService;
 import java.io.IOException;
 
-@Slf4j
+@Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-    public static final String X_AUTH = "x-auth";
+    public static final String X_AUTH = "Authorization";
     private UserDetailsService userDetailsService;
+    @Autowired
     private FirebaseAuth firebaseAuth;
     private CustomUserService customUserService;
 
-    public JwtFilter(UserDetailsService userDetailsService, FirebaseAuth firebaseAuth) {
+    public JwtFilter(CustomUserService userDetailsService, FirebaseAuth firebaseAuth) {
         this.userDetailsService = userDetailsService;
         this.firebaseAuth = firebaseAuth;
     }
@@ -32,22 +39,26 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String jwt = request.getHeader(X_AUTH);
+        jwt = jwt.substring("Bearer ".length());
+
+        FirebaseToken verifyIdToken = null;
+        try {
+            verifyIdToken = firebaseAuth.verifyIdToken(jwt);
+        } catch (FirebaseAuthException e) {
+            throw new RuntimeException(e);
+        }
+
         String uri = request.getRequestURI();
 
-        if(uri.contains("/api/v1/login") || uri.contains("/questionnaires")){
+        if(uri.contains("/api") || uri.contains("/questionnaires")){
             filterChain.doFilter(request, response);
             return;
         }
-        try {
-            FirebaseToken verifyIdToken = firebaseAuth.verifyIdToken(jwt);
-            String uid = verifyIdToken.getUid();
-            Authentication authentication = customUserService.getAuthentication(uid);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (FirebaseAuthException e) {
-            log.error(e.getMessage());
-        }
+
+        String uid = verifyIdToken.getUid();
+        Authentication authentication = customUserService.getAuthentication(uid);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
-
     }
 }

@@ -30,7 +30,6 @@ public class QuestionnaireController {
     public String getQuestionnaireList(Model model) {
         List<Questionnaire> questionnaireList = questionnaireService.getAllQuestionnaires();
         model.addAttribute("questionnaireList", questionnaireList);
-        System.out.println("hihi" + questionnaireList.toString());
         return "questionnaire/questionnaire-list";
     }
 

@@ -18,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 public class FirebaseConfig {
     @Bean
     public FirebaseAuth firebaseAuth() throws IOException {
-        System.out.println("firebaseAuth start");
+
         ClassPathResource serviceAccountResource = new ClassPathResource("serviceAccountKey.json");
         try (InputStream inputStream = serviceAccountResource.getInputStream()) {
             String serviceAccountJson = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
