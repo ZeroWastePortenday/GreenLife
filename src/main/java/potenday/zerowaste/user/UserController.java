@@ -6,6 +6,7 @@ import com.google.cloud.firestore.Firestore;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,25 +18,22 @@ import potenday.zerowaste.common.ResponseService;
 import java.util.Objects;
 
 @Slf4j
-@RequestMapping("/api/v1")
 @RestController
+@RequestMapping("/api/v1")
+@RequiredArgsConstructor
 public class UserController {
 
-    public static final String X_AUTH = "x-auth";
+    public static final String X_AUTH = "Authorization";
     private final Firestore firestore;
     private final FirebaseAuth firebaseAuth;
     private final ResponseService responseService;
-
-    public UserController(Firestore firestore, FirebaseAuth firebaseAuth, ResponseService responseService) {
-        this.firestore = firestore;
-        this.firebaseAuth = firebaseAuth;
-        this.responseService = responseService;
-    }
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(HttpServletRequest request) throws FirebaseAuthException {
 
         String jwt = request.getHeader(X_AUTH);
+
+        jwt = jwt.substring("Bearer ".length());
 
         FirebaseToken firebaseToken = firebaseAuth.verifyIdToken(jwt);
         String uid = firebaseToken.getUid();
@@ -48,7 +46,6 @@ public class UserController {
     public ResponseEntity<?> login(HttpServletRequest request) throws FirebaseAuthException {
 
         String jwt = request.getHeader(X_AUTH);
-
         FirebaseToken firebaseToken = firebaseAuth.verifyIdToken(jwt);
         String uid = firebaseToken.getUid();
         User user = CustomUserService.getUserByUid(uid);
