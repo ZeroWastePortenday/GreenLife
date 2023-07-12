@@ -41,6 +41,8 @@ public class JwtFilter extends OncePerRequestFilter {
         String jwt = request.getHeader(X_AUTH);
         jwt = jwt.substring("Bearer ".length());
 
+        System.out.println("jwt" + jwt);
+
         FirebaseToken verifyIdToken = null;
         try {
             verifyIdToken = firebaseAuth.verifyIdToken(jwt);

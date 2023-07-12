@@ -32,11 +32,12 @@ public class UserController {
     public ResponseEntity<?> signup(HttpServletRequest request) throws FirebaseAuthException {
 
         String jwt = request.getHeader(X_AUTH);
-
         jwt = jwt.substring("Bearer ".length());
 
         FirebaseToken firebaseToken = firebaseAuth.verifyIdToken(jwt);
         String uid = firebaseToken.getUid();
+        System.out.println("uid " + uid);
+
         User user = CustomUserService.signUp(uid);
 
         return ResponseEntity.ok(responseService.getSingleResult(UserDto.of(user)));
@@ -46,12 +47,14 @@ public class UserController {
     public ResponseEntity<?> login(HttpServletRequest request) throws FirebaseAuthException {
 
         String jwt = request.getHeader(X_AUTH);
+        jwt = jwt.substring("Bearer ".length());
+
         FirebaseToken firebaseToken = firebaseAuth.verifyIdToken(jwt);
         String uid = firebaseToken.getUid();
         User user = CustomUserService.getUserByUid(uid);
 
         if(Objects.isNull(user)){
-            user = CustomUserService.signUp(uid);
+            throw new RuntimeException("no user");
         }
 
         return ResponseEntity.ok(responseService.getSingleResult(UserDto.of(user)));
