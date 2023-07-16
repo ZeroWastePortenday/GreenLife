@@ -8,14 +8,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.server.ResponseStatusException;
 import potenday.zerowaste.user.CustomUserService;
 import java.io.IOException;
 
@@ -41,11 +42,18 @@ public class JwtFilter extends OncePerRequestFilter {
         String jwt = request.getHeader(X_AUTH);
         jwt = jwt.substring("Bearer ".length());
 
+        System.out.println("jwt" + jwt);
+
         FirebaseToken verifyIdToken = null;
         try {
             verifyIdToken = firebaseAuth.verifyIdToken(jwt);
-        } catch (FirebaseAuthException e) {
-            throw new RuntimeException(e);
+        } catch (FirebaseAuthException e) {{
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Token Not Found", e);
+            }
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Token Not Found", e);
         }
 
         String uri = request.getRequestURI();

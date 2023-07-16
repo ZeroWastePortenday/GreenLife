@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -15,14 +16,15 @@ import java.util.Date;
 @AllArgsConstructor
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class)
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "firebase_hash", nullable = false)
-    private String firebase_hash;
+    @Column(name = "firebase_hash")
+    private String firebase_hash = "firebase";
 
     @Column(name = "name")
     private String name;
@@ -34,19 +36,28 @@ public class User implements UserDetails {
     private String nickname;
 
     @Builder
-    public User(String username, String email, String nickname) {
+    public User(String name, String email, String nickname) {
+        this.name = name;
+        this.email = email;
+        this.nickname = nickname;
     }
+    @Builder
+    public User(String name, String firebase_hash) {
+        this.name = name;
+        this.firebase_hash = firebase_hash;
+    }
+
 
     @Column(name = "device_type")
     private String device_type;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "createdAt", nullable = false, updatable = false)
     @CreatedDate
     private Date createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updatedAt", nullable = false)
     @LastModifiedDate
     private Date updatedAt;
 
