@@ -35,9 +35,6 @@ public class CustomUserService implements UserDetailsService {
     }
 
     public static User signUp(String uid) throws FirebaseAuthException {
-
-        System.out.println("signUp" + uid);
-
         User user = User.builder()
                 .name(uid)
                 .build();
