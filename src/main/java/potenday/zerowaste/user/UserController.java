@@ -8,11 +8,15 @@ import com.google.firebase.auth.FirebaseToken;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import potenday.zerowaste.common.CommonHandler;
+import potenday.zerowaste.common.CommonResult;
 import potenday.zerowaste.common.ResponseService;
 
 import java.util.Objects;
@@ -26,7 +30,8 @@ public class UserController {
     public static final String X_AUTH = "Authorization";
     private final Firestore firestore;
     private final FirebaseAuth firebaseAuth;
-    private final ResponseService responseService;
+    @Autowired
+    private ResponseService responseService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(HttpServletRequest request) throws FirebaseAuthException {
@@ -53,10 +58,23 @@ public class UserController {
         User user = CustomUserService.getUserByUid(uid);
 
         if(Objects.isNull(user)){
-            throw new RuntimeException("no user");
+            CommonHandler responseDto = new CommonHandler(false, 403, "no user");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(responseDto);
         }
 
         return ResponseEntity.ok(responseService.getSingleResult(UserDto.of(user)));
+    }
+
+    @PostMapping("/delete")
+    public void delete(HttpServletRequest request) throws FirebaseAuthException {
+
+        String jwt = request.getHeader(X_AUTH);
+        jwt = jwt.substring("Bearer ".length());
+
+        FirebaseToken firebaseToken = firebaseAuth.verifyIdToken(jwt);
+        String uid = firebaseToken.getUid();
+        CustomUserService.deleteUser(uid);
     }
 
     @GetMapping("/user_all")

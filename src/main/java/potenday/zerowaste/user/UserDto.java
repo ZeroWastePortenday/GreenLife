@@ -13,7 +13,6 @@ public class UserDto {
 
     public static UserDto of(User user) {
         return UserDto.builder()
-                .name(user.getName())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .build();
