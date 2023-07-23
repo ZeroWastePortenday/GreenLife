@@ -34,9 +34,10 @@ public class CustomUserService implements UserDetailsService {
         return (User) userRepository.findByName(uid);
     }
 
-    public static User signUp(String uid) throws FirebaseAuthException {
+    public static User signUp(String uid, String nickname) throws FirebaseAuthException {
         User user = User.builder()
                 .name(uid)
+                .nickname(nickname)
                 .build();
 
         return userRepository.save(user);
