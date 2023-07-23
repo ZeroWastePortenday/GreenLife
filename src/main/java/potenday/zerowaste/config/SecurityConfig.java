@@ -30,37 +30,12 @@ public class SecurityConfig {
         return (web) -> web.ignoring()
                 .requestMatchers("/resources/**");
     }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//
-//                .authorizeRequests()
-//                .requestMatchers("/users").permitAll()
-//                .requestMatchers("/").permitAll()
-////                .requestMatchers("/test").permitAll()
-//                .requestMatchers("/resources/**").permitAll()
-//                .requestMatchers("/questionnaires/**").permitAll()
-//                .requestMatchers("/signup").permitAll()
-//                .requestMatchers("/login").permitAll()
-//                .anyRequest().authenticated()
-//                .and()
-//                .addFilterBefore(new JwtFilter(userDetailsService, firebaseAuth),
-//                        UsernamePasswordAuthenticationFilter.class);
-
-//        http.authorizeRequests()
-//                .anyRequest().permitAll();
-//
-//        System.out.println("securityFilterChain begin~!");
-//        http.addFilterBefore(new JwtFilter(userDetailsService, firebaseAuth),
-//                        UsernamePasswordAuthenticationFilter.class);
-//
-//        return http.build();
-
 
         return http
                 .authorizeRequests() // 인증, 인가 설정
-                .requestMatchers("/api/v1/login", "/api/v1/signup", "/user").permitAll()
+                .requestMatchers("/api/v1/login", "/api/v1/signup", "/api/v1/delete", "/user").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable()

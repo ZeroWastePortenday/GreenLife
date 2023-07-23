@@ -42,6 +42,16 @@ public class CustomUserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    public static void deleteUser(String uid) {
+        User user = userRepository.findByName(uid);
+
+        if (user != null) {
+            userRepository.delete(user);
+        } else {
+            throw new IllegalArgumentException("해당 uid를 가진 사용자가 존재하지 않습니다.");
+        }
+    }
+
     public Authentication getAuthentication(String uid){
 
         User user = getUserByUid(uid);
