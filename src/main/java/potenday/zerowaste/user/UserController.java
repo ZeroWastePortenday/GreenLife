@@ -41,8 +41,11 @@ public class UserController {
 
         FirebaseToken firebaseToken = firebaseAuth.verifyIdToken(jwt);
         String uid = firebaseToken.getUid();
+        String nickname = request.getParameter("nickname");
 
-        User user = CustomUserService.signUp(uid);
+        System.out.println("gggg" + nickname);
+
+        User user = CustomUserService.signUp(uid, nickname);
 
         return ResponseEntity.ok(responseService.getSingleResult(UserDto.of(user)));
     }
